@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 use std::fs;
+use std::path::Path;
 use infer;
 use read_input::prelude::*;
 use lab01_2022_input_validation::*;
@@ -44,11 +45,12 @@ fn file_upload(input: &String) -> Result<String, String> {
   if !map.contains_key(&uuid) {
     let path;
     let file_type;
+    let file_name = Path::new(&input).file_name().unwrap();
     if infer::is_image(&file) {
-      path = format!("{}{}", IMAGES_PATH, input);
+      path = format!("{}{}", IMAGES_PATH, file_name.to_str().unwrap());
       file_type = "an image".to_string();
     } else {
-      path = format!("{}{}", VIDEOS_PATH, input);
+      path = format!("{}{}", VIDEOS_PATH, file_name.to_str().unwrap());
       file_type = "a video".to_string();
     }
     map.insert(uuid.clone(), StoredFile {
@@ -91,12 +93,19 @@ fn file_verify_handler() {
   match file_verify(&input) {
     Ok(msg) => println!("{}", msg),
     Err(msg) => println!("{}", msg)
-    }
+  }
 }
 
-// TODO: IMPLEMENT GET URL LOGIC
 fn get_url_handler() {
+  let input = input::<String>().repeat_msg("Please enter the UUID to get :")
+  .add_err_test(|uuid| validate_uuid(uuid), "Invalid UUID !")
+  .get();
 
+  let map = HASHMAP.lock().unwrap();
+  match map.get(&input) {
+    Some(file) => println!("{}", file.path),
+    None => println!("No file corresponding to this UUID !")
+  }
 }
 
 fn main() {
