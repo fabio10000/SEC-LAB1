@@ -35,7 +35,7 @@ fn file_upload(input: &String) -> Result<String, String> {
     Err(_) => return Err("Invalid file contents !".to_string()),
   };
 
-  if !validate_file(&file) {
+  if !validate_file(&file, input) {
     return Err("Invalid file format !".to_string());
   }
 
