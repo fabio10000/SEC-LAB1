@@ -1,16 +1,18 @@
 use infer;
+use std::path::Path;
 
 // DO NOT READ FILE CONTENTS INSIDE THIS FUNCTION
-pub fn validate_file(file: &[u8]) -> bool {
+pub fn validate_file(file: &[u8], path: &String) -> bool {
     if (!infer::is_image(&file) && ! infer::is_video(file)) {
       return false
     }
 
-    // todo: vérifier que mime type correspond à l'extension
-    // let kind = infer::get(&file).expect("file type is known");
-    // let mime = kind.mime_type();
-    // let extension = kind.extension();
-    true
+    let kind = infer::get(&file).expect("file type is known");
+    return match Path::new(path).extension().unwrap().to_str().unwrap() {
+      "jpeg" => kind.extension() == "jpg",
+      "tif" => kind.extension() == "tiff",
+      extension => kind.extension() == extension
+    };
 }
 
 // TODO : implement unit testing
