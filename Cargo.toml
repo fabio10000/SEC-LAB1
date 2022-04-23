@@ -8,3 +8,11 @@ edition = "2021"
 [dependencies]
 read_input = "0.8.6"
 lazy_static = "1.4.0"
+infer = "0.3"
+regex = "1.5.5"
+
+[dependencies.uuid]
+version = "1.0.0"
+features = [
+  "v5",
+]
