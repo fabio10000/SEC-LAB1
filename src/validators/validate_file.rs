@@ -3,7 +3,7 @@ use std::path::Path;
 
 // DO NOT READ FILE CONTENTS INSIDE THIS FUNCTION
 pub fn validate_file(file: &[u8], path: &String) -> bool {
-    if (!infer::is_image(&file) && ! infer::is_video(file)) {
+    if !infer::is_image(&file) && ! infer::is_video(file) {
       return false
     }
 
