@@ -1,7 +1,14 @@
+/**
+ * Author: Fabio da Silva Marques
+ * Last edit: 24.04.2022
+ */
 use regex::Regex;
 use lazy_static::lazy_static;
 
-// DO NOT READ FILE CONTENTS INSIDE THIS FUNCTION
+/// Function that verifies if it's a valid UUID v5
+/// doesn't check for the used variant
+/// # Arguments
+/// * `uuid_str` - An uuid to test as a string
 pub fn validate_uuid(uuid_str: &String) -> bool {
   lazy_static! {
     // https://en.wikipedia.org/wiki/Universally_unique_identifier#Format

@@ -1,13 +1,21 @@
+/**
+ * Author: Fabio da Silva Marques
+ * Last edit: 24.04.2022
+ */
 use regex::Regex;
 use lazy_static::lazy_static;
 
+/// Verifies if it's a valid url using a simplist regex
+/// # Arguments
+/// * `url` - An URL as a string
+/// * `tld_whitelist` - A list of whitelisted top level domains if an empty list is given then it's going to match all possible top level domains
 pub fn validate_url(url: &String, tld_whitelist: &[String]) -> bool {
   lazy_static! {
     static ref RE: Regex = Regex::new(r"^([a-z\d]+://)?[a-zA-Z\d\-\.]+(?P<tld>\.[a-zA-Z\d\.]+[a-zA-Z])([/#].*)?$").unwrap();
   }
 
-  
   return match RE.captures(url) {
+    // if is a valid url then check if top-level-domain is present inside the whitelist
     Some(caps) => {
       if tld_whitelist.len() > 0 {
         return tld_whitelist.contains(&caps["tld"].to_string());

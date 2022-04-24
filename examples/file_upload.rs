@@ -1,3 +1,7 @@
+/**
+ * Author: Fabio da Silva Marques
+ * Last edit: 24.04.2022
+ */
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -12,6 +16,10 @@ use uuid::Uuid;
 static IMAGES_PATH: &str = "sec.upload/images/";
 static VIDEOS_PATH: &str = "sec.upload/videos/";
 
+/// A struct representing an uploaded file
+/// # Properties
+/// * `path` - The path to the file on the "server"
+/// * `file_type` - A textual representation of the file type ex: '*an image*' if the file is an image
 struct StoredFile {
   path: String,
   file_type: String,
@@ -25,11 +33,15 @@ lazy_static! {
   static ref HASHMAP: Mutex<HashMap<String, StoredFile>> = Mutex::new(HashMap::new());
 }
 
+/// Validates the file and uploads it to the server if ok
+/// # Arguments
+/// * `input` - user input to be sanitazed, representig a file path
 fn file_upload(input: &String) -> Result<String, String> {
   if !fs::metadata(input).is_ok() {
     return Err("Invalid file !".to_string());
   }
 
+  // check if we can read the file
   let file = match fs::read(input) {
     Ok(bytes) => bytes,
     Err(_) => return Err("Invalid file contents !".to_string()),
@@ -42,6 +54,7 @@ fn file_upload(input: &String) -> Result<String, String> {
   let mut map = HASHMAP.lock().unwrap();
   let uuid = Uuid::new_v5(&Uuid::NAMESPACE_DNS, &file).to_string();
   
+  // upload file to the server if not already present
   if !map.contains_key(&uuid) {
     let path;
     let file_type;
@@ -62,6 +75,7 @@ fn file_upload(input: &String) -> Result<String, String> {
   return Err(format!("This file has already been uploaded with UUID : {}", uuid));
 }
 
+/// Handle the file upload menu
 fn file_upload_handler() {
   loop {
     let input = input::<String>().repeat_msg("Please enter the path to an image or video file : ").get();
@@ -75,6 +89,9 @@ fn file_upload_handler() {
   }
 }
 
+/// Check if a given uuid corresponds to a file on the server
+/// # Arguments
+/// * `uuid` - A valid uuid
 fn file_verify(uuid: &String) -> Result<String, String> {
   let map = HASHMAP.lock().unwrap();
   if !map.contains_key(uuid) {
@@ -85,6 +102,7 @@ fn file_verify(uuid: &String) -> Result<String, String> {
   return Ok(format!("File {} exists, it is {} file.", uuid, file.file_type));
 }
 
+/// Handle the file verification menu
 fn file_verify_handler() {
   let input = input::<String>().repeat_msg("Please enter the UUID to check :")
   .add_err_test(|uuid| validate_uuid(uuid), "Invalid UUID !")
@@ -96,6 +114,7 @@ fn file_verify_handler() {
   }
 }
 
+/// Handle the get file menu
 fn get_url_handler() {
   let input = input::<String>().repeat_msg("Please enter the UUID to get :")
   .add_err_test(|uuid| validate_uuid(uuid), "Invalid UUID !")
@@ -108,6 +127,8 @@ fn get_url_handler() {
   }
 }
 
+/// Main program  
+/// Handles a menu to interact with the user
 fn main() {
     println!("Welcome to the super secure file upload tool !");
     loop {

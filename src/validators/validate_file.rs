@@ -1,7 +1,15 @@
+/**
+ * Author: Fabio da Silva Marques
+ * Last edit: 24.04.2022
+ */
 use infer;
 use std::path::Path;
 
-// DO NOT READ FILE CONTENTS INSIDE THIS FUNCTION
+/// Check if a file is an image or a video
+/// Only validates files supported by infer crate: https://docs.rs/infer/latest/infer/
+/// # Arguments
+/// * `file` - A file buffer
+/// * `path` - String containing the path to the filename or just the filename
 pub fn validate_file(file: &[u8], path: &String) -> bool {
     if !infer::is_image(&file) && ! infer::is_video(file) {
       return false
